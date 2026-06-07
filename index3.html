@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marit nummer systeem</title>
+  <style>
+    :root {
+      --bg-1: #170f2e;
+      --bg-2: #2f174f;
+      --card: rgba(255, 255, 255, 0.12);
+      --card-strong: rgba(255, 255, 255, 0.18);
+      --text: #fff7ff;
+      --muted: #dccde8;
+      --accent: #ffcf6b;
+      --accent-2: #f37bba;
+      --accent-3: #8ce7ff;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --good: #8dffcf;
+      --danger: #ff9da9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 207, 107, 0.3), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(140, 231, 255, 0.24), transparent 34rem),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .sparkle {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.38;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.55) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 207, 107, 0.7) 1px, transparent 1px);
+      background-position: 0 0, 35px 45px;
+      background-size: 90px 90px, 140px 140px;
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+    }
+
+    main {
+      position: relative;
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 44px;
+    }
+
+    .hero,
+    .grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero {
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: stretch;
+      gap: 28px;
+      margin-bottom: 28px;
+    }
+
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-card,
+    .panel,
+    .info-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 30px;
+      background: var(--card);
+      box-shadow: 0 24px 80px var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-card {
+      padding: 42px;
+    }
+
+    .panel {
+      padding: 28px;
+    }
+
+    .info-card {
+      margin-top: 24px;
+      padding: 30px;
+    }
+
+
+    .edge-card {
+      isolation: isolate;
+    }
+
+    .edge-card > *:not(.edge-line) {
+      position: relative;
+      z-index: 2;
+    }
+
+    .edge-line {
+      position: absolute;
+      z-index: 1;
+      display: block;
+      pointer-events: none;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 8px rgba(140, 231, 255, 0.9)) drop-shadow(0 0 16px rgba(243, 123, 186, 0.55));
+      background: linear-gradient(90deg, transparent, var(--accent-3), var(--accent), var(--accent-2), transparent);
+    }
+
+    .edge-line.top,
+    .edge-line.bottom {
+      width: 62%;
+      height: 2px;
+    }
+
+    .edge-line.left,
+    .edge-line.right {
+      width: 2px;
+      height: 62%;
+      background: linear-gradient(180deg, transparent, var(--accent-3), var(--accent), var(--accent-2), transparent);
+    }
+
+    .edge-line.top {
+      top: 0;
+      left: -64%;
+      animation: edgeTop 4.8s linear infinite;
+    }
+
+    .edge-line.right {
+      top: -64%;
+      right: 0;
+      animation: edgeRight 4.8s linear infinite;
+      animation-delay: 1.2s;
+    }
+
+    .edge-line.bottom {
+      right: -64%;
+      bottom: 0;
+      animation: edgeBottom 4.8s linear infinite;
+      animation-delay: 2.4s;
+    }
+
+    .edge-line.left {
+      bottom: -64%;
+      left: 0;
+      animation: edgeLeft 4.8s linear infinite;
+      animation-delay: 3.6s;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(1.9rem, 4.2vw, 3.9rem);
+      line-height: 1;
+      letter-spacing: -0.055em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.55rem;
+      letter-spacing: -0.04em;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .number-orb {
+      display: grid;
+      place-items: center;
+      padding: 30px;
+    }
+
+    .orb {
+      display: grid;
+      place-items: center;
+      width: clamp(210px, 22vw, 300px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.8), transparent 18%),
+        linear-gradient(145deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
+      box-shadow: 0 35px 90px rgba(0, 0, 0, 0.35), inset 0 0 50px rgba(255, 255, 255, 0.34);
+      color: #221033;
+      font-size: 7rem;
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .input-row {
+      display: grid;
+      gap: 10px;
+      margin: 22px 0 16px;
+    }
+
+    .input-row.date-row {
+      width: min(260px, 100%);
+    }
+
+    label {
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      font: inherit;
+      transition: 0.2s ease;
+    }
+
+    textarea {
+      min-height: 114px;
+      resize: vertical;
+    }
+
+    input[type="date"] {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 4px rgba(255, 207, 107, 0.16);
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      padding: 13px 18px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #221033;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+    }
+
+    button.secondary {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--text);
+    }
+
+    .result {
+      min-height: 122px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 24px;
+      background: var(--card-strong);
+    }
+
+    .result.empty {
+      color: var(--muted);
+    }
+
+    .result-title {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .sum-line {
+      overflow-wrap: anywhere;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+
+    .final-number {
+      display: inline-grid;
+      place-items: center;
+      min-width: 58px;
+      height: 58px;
+      margin-top: 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--good), var(--accent-3));
+      color: #111827;
+      box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.45);
+      font-size: 2rem;
+      font-weight: 950;
+    }
+
+    .warning {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .alphabet {
+      display: grid;
+      grid-template-columns: repeat(13, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .letter {
+      padding: 10px 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.11);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    .letter strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: rgba(255, 247, 255, 0.7);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @keyframes edgeTop {
+      from { transform: translateX(0); }
+      to { transform: translateX(264%); }
+    }
+
+    @keyframes edgeRight {
+      from { transform: translateY(0); }
+      to { transform: translateY(264%); }
+    }
+
+    @keyframes edgeBottom {
+      from { transform: translateX(0); }
+      to { transform: translateX(-264%); }
+    }
+
+    @keyframes edgeLeft {
+      from { transform: translateY(0); }
+      to { transform: translateY(-264%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .edge-line {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      main {
+        padding-top: 28px;
+      }
+
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card,
+      .panel,
+      .info-card {
+        padding: 24px;
+        border-radius: 24px;
+      }
+
+      .number-orb {
+        min-height: 240px;
+      }
+
+      .orb {
+        width: 210px;
+        font-size: 5rem;
+      }
+
+      input[type="date"] {
+        max-width: 100%;
+      }
+
+      .alphabet {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkle" aria-hidden="true"></div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card edge-card">
+        <span class="edge-line top" aria-hidden="true"></span>
+        <span class="edge-line right" aria-hidden="true"></span>
+        <span class="edge-line bottom" aria-hidden="true"></span>
+        <span class="edge-line left" aria-hidden="true"></span>
+        <span class="label">✨ Marit nummer systeem</span>
+        <h1>Ontdek het getal achter datum en tekst</h1>
+        <p>
+          Zet een geboortedatum, speciale datum, woord of zin om naar een totaalsom.
+          Daarna wordt de uitkomst teruggebracht tot één eindgetal door de cijfers opnieuw op te tellen.
+        </p>
+      </div>
+
+      <div class="number-orb hero-card edge-card" aria-label="Decoratief cijfer">
+        <span class="edge-line top" aria-hidden="true"></span>
+        <span class="edge-line right" aria-hidden="true"></span>
+        <span class="edge-line bottom" aria-hidden="true"></span>
+        <span class="edge-line left" aria-hidden="true"></span>
+        <div class="orb" id="heroNumber">8</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel edge-card">
+        <span class="edge-line top" aria-hidden="true"></span>
+        <span class="edge-line right" aria-hidden="true"></span>
+        <span class="edge-line bottom" aria-hidden="true"></span>
+        <span class="edge-line left" aria-hidden="true"></span>
+        <h2>Datum omzetten</h2>
+        <p>Voorbeeld: 28/11/1967 wordt 28 + 11 + 19 + 67 = 125 en daarna 1 + 2 + 5 = 8.</p>
+
+        <div class="input-row date-row">
+          <label for="dateInput">Vul een datum in</label>
+          <input id="dateInput" type="date" value="1967-11-28" />
+        </div>
+
+        <div class="buttons">
+          <button id="dateButton">Bereken datumgetal</button>
+          <button class="secondary" id="dateExample">Gebruik voorbeeld</button>
+        </div>
+
+        <div class="result" id="dateResult"></div>
+      </article>
+
+      <article class="panel edge-card">
+        <span class="edge-line top" aria-hidden="true"></span>
+        <span class="edge-line right" aria-hidden="true"></span>
+        <span class="edge-line bottom" aria-hidden="true"></span>
+        <span class="edge-line left" aria-hidden="true"></span>
+        <h2>Woorden en zinnen omzetten</h2>
+        <p>Elke letter krijgt een waarde volgens de bestaande Marit methode. Daaronder worden ook de Pythagoras en Chaldean naam Nasr nummers berekend.</p>
+
+        <div class="input-row">
+          <label for="textInput">Vul een woord of zin in</label>
+          <textarea id="textInput" placeholder="Bijvoorbeeld: Jos">Jos</textarea>
+        </div>
+
+        <div class="buttons">
+          <button id="textButton">Bereken tekstgetal</button>
+          <button class="secondary" id="textExample">Gebruik voorbeeld</button>
+        </div>
+
+        <div class="result" id="textResult"></div>
+        <div class="result" id="pythagorasResult"></div>
+        <div class="result" id="chaldeanResult"></div>
+      </article>
+    </section>
+
+    <section class="info-card edge-card">
+      <span class="edge-line top" aria-hidden="true"></span>
+      <span class="edge-line right" aria-hidden="true"></span>
+      <span class="edge-line bottom" aria-hidden="true"></span>
+      <span class="edge-line left" aria-hidden="true"></span>
+      <h2>Hoe werkt het?</h2>
+      <p>
+        Het Marit nummer systeem gebruikt eenvoudige optelling. Bij datums wordt het jaartal in twee delen gesplitst.
+        Bij 1967 wordt dat dus 19 en 67. Bij tekst worden alleen letters meegeteld. Spaties, cijfers en leestekens worden genegeerd.
+      </p>
+      <p>
+        Voor namen zijn twee extra Nasr methodes toegevoegd. Pythagoras telt letters doorlopend op van 1 tot en met 9.
+        Chaldean gebruikt een eigen letterindeling van 1 tot en met 8 en gebruikt geen letterwaarde 9.
+      </p>
+      <p>
+        Het totaal wordt teruggebracht tot één eindgetal door de losse cijfers op te tellen. Komt daar opnieuw een getal met meerdere cijfers uit,
+        dan wordt de stap herhaald tot er één cijfer overblijft.
+      </p>
+
+      <div class="alphabet" id="alphabet"></div>
+    </section>
+
+    <footer>Gemaakt voor het Marit nummer systeem</footer>
+  </main>
+
+  <script>
+    const dateInput = document.getElementById('dateInput');
+    const textInput = document.getElementById('textInput');
+    const dateResult = document.getElementById('dateResult');
+    const textResult = document.getElementById('textResult');
+    const pythagorasResult = document.getElementById('pythagorasResult');
+    const chaldeanResult = document.getElementById('chaldeanResult');
+    const heroNumber = document.getElementById('heroNumber');
+    const alphabet = document.getElementById('alphabet');
+
+    const pythagorasValues = Object.fromEntries(
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((letter, index) => [letter, (index % 9) + 1])
+    );
+
+    const chaldeanValues = {
+      A: 1, I: 1, J: 1, Q: 1, Y: 1,
+      B: 2, K: 2, R: 2,
+      C: 3, G: 3, L: 3, S: 3,
+      D: 4, M: 4, T: 4,
+      E: 5, H: 5, N: 5, X: 5,
+      U: 6, V: 6, W: 6,
+      O: 7, Z: 7,
+      F: 8, P: 8
+    };
+
+    function digitReductionSteps(number) {
+      const steps = [];
+      let current = Math.abs(Number(number));
+
+      while (current > 9) {
+        const digits = String(current).split('').map(Number);
+        const sum = digits.reduce((total, value) => total + value, 0);
+        steps.push({ digits, sum });
+        current = sum;
+      }
+
+      return { final: current, steps };
+    }
+
+    function formatReduction(steps) {
+      if (!steps.length) return '';
+      return steps.map(step => `${step.digits.join(' + ')} = ${step.sum}`).join('<br>');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getLetterEntries(value, values) {
+      const entries = [];
+
+      for (const character of value) {
+        const normalized = normalizeLetter(character);
+        const code = normalized.charCodeAt(0);
+
+        if (code >= 65 && code <= 90 && values[normalized]) {
+          entries.push({ letter: normalized, value: values[normalized] });
+        }
+      }
+
+      return entries;
+    }
+
+    function renderNameMethodResult(target, methodName, value, entries, note = '') {
+      if (!value) {
+        target.className = 'result empty';
+        target.innerHTML = '<span class="warning">Vul eerst een naam, woord of zin in.</span>';
+        return;
+      }
+
+      if (!entries.length) {
+        target.className = 'result empty';
+        target.innerHTML = '<span class="warning">Er zijn geen letters gevonden om op te tellen.</span>';
+        return;
+      }
+
+      const total = entries.reduce((sum, item) => sum + item.value, 0);
+      const reduction = digitReductionSteps(total);
+      const letterLine = entries.map(item => `${item.letter}=${item.value}`).join(' + ');
+      const valueLine = entries.map(item => item.value).join(' + ');
+      const reductionLine = formatReduction(reduction.steps);
+
+      target.className = 'result';
+      target.innerHTML = `
+        <div class="result-title">${methodName}: ${escapeHtml(value)}</div>
+        <div class="sum-line">${letterLine}</div>
+        <div class="sum-line">${valueLine} = ${total}</div>
+        ${reductionLine ? `<div class="sum-line">${reductionLine}</div>` : ''}
+        ${note ? `<div class="sum-line">${note}</div>` : ''}
+        <div class="final-number" title="Naam Nasr nummer">${reduction.final}</div>
+      `;
+    }
+
+    function setHero(number) {
+      heroNumber.textContent = number;
+    }
+
+    function calculateDate() {
+      const value = dateInput.value;
+
+      if (!value) {
+        dateResult.className = 'result empty';
+        dateResult.innerHTML = '<span class="warning">Vul eerst een datum in.</span>';
+        return;
+      }
+
+      const [year, month, day] = value.split('-');
+      const yearFirst = Number(year.slice(0, 2));
+      const yearSecond = Number(year.slice(2));
+      const parts = [Number(day), Number(month), yearFirst, yearSecond];
+      const total = parts.reduce((sum, value) => sum + value, 0);
+      const reduction = digitReductionSteps(total);
+      const dateDisplay = `${day}/${month}/${year}`;
+
+      dateResult.className = 'result';
+      dateResult.innerHTML = `
+        <div class="result-title">Datum: ${dateDisplay}</div>
+        <div class="sum-line">${parts.join(' + ')} = ${total}</div>
+        <div class="sum-line">${formatReduction(reduction.steps)}</div>
+        <div class="final-number" title="Eindgetal">${reduction.final}</div>
+      `;
+      setHero(reduction.final);
+    }
+
+    function normalizeLetter(character) {
+      return character
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+    }
+
+    function calculateText() {
+      const value = textInput.value.trim();
+
+      if (!value) {
+        textResult.className = 'result empty';
+        textResult.innerHTML = '<span class="warning">Vul eerst een woord of zin in.</span>';
+        pythagorasResult.className = 'result empty';
+        pythagorasResult.innerHTML = '<span class="warning">Vul eerst een naam, woord of zin in.</span>';
+        chaldeanResult.className = 'result empty';
+        chaldeanResult.innerHTML = '<span class="warning">Vul eerst een naam, woord of zin in.</span>';
+        return;
+      }
+
+      const maritEntries = [];
+
+      for (const character of value) {
+        const normalized = normalizeLetter(character);
+        const code = normalized.charCodeAt(0);
+
+        if (code >= 65 && code <= 90) {
+          maritEntries.push({ letter: normalized, value: code - 64 });
+        }
+      }
+
+      if (!maritEntries.length) {
+        textResult.className = 'result empty';
+        textResult.innerHTML = '<span class="warning">Er zijn geen letters gevonden om op te tellen.</span>';
+        renderNameMethodResult(pythagorasResult, 'Pythagoras naam Nasr nummer', value, []);
+        renderNameMethodResult(chaldeanResult, 'Chaldean naam Nasr nummer', value, []);
+        return;
+      }
+
+      const total = maritEntries.reduce((sum, item) => sum + item.value, 0);
+      const reduction = digitReductionSteps(total);
+      const letterLine = maritEntries.map(item => `${item.letter}=${item.value}`).join(' + ');
+      const valueLine = maritEntries.map(item => item.value).join(' + ');
+
+      textResult.className = 'result';
+      textResult.innerHTML = `
+        <div class="result-title">Marit tekstgetal: ${escapeHtml(value)}</div>
+        <div class="sum-line">${letterLine}</div>
+        <div class="sum-line">${valueLine} = ${total}</div>
+        <div class="sum-line">${formatReduction(reduction.steps)}</div>
+        <div class="final-number" title="Eindgetal">${reduction.final}</div>
+      `;
+
+      renderNameMethodResult(
+        pythagorasResult,
+        'Pythagoras naam Nasr nummer',
+        value,
+        getLetterEntries(value, pythagorasValues)
+      );
+
+      renderNameMethodResult(
+        chaldeanResult,
+        'Chaldean naam Nasr nummer',
+        value,
+        getLetterEntries(value, chaldeanValues),
+        'Het totaal is het compound nummer; het cijfer in de bol is de herleide waarde.'
+      );
+
+      setHero(reduction.final);
+    }
+
+    function renderAlphabet() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      alphabet.innerHTML = letters.map((letter, index) => `
+        <div class="letter"><strong>${letter}</strong>${index + 1}</div>
+      `).join('');
+    }
+
+    document.getElementById('dateButton').addEventListener('click', calculateDate);
+    document.getElementById('textButton').addEventListener('click', calculateText);
+
+    document.getElementById('dateExample').addEventListener('click', () => {
+      dateInput.value = '1967-11-28';
+      calculateDate();
+    });
+
+    document.getElementById('textExample').addEventListener('click', () => {
+      textInput.value = 'Jos';
+      calculateText();
+    });
+
+    dateInput.addEventListener('input', calculateDate);
+    textInput.addEventListener('input', calculateText);
+
+    renderAlphabet();
+    calculateDate();
+    calculateText();
+  </script>
+</body>
+</html>
