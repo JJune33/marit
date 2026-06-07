@@ -312,6 +312,81 @@
       color: var(--muted);
     }
 
+    .result + .result {
+      margin-top: 14px;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .method-card {
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .method-card h3 {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .method-card p {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+    }
+
+    .method-note {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--accent-3);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .mini-alphabet {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .mini-letter {
+      padding: 8px 7px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    .mini-letter strong {
+      display: block;
+      color: var(--accent);
+      font-size: 0.92rem;
+    }
+
+    .method-tip {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid rgba(140, 231, 255, 0.2);
+      border-radius: 20px;
+      background: rgba(140, 231, 255, 0.08);
+      color: var(--muted);
+    }
+
+
     .result-title {
       margin-bottom: 8px;
       color: var(--accent);
@@ -431,6 +506,15 @@
       .alphabet {
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
+
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-alphabet {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
     }
   </style>
 </head>
@@ -489,7 +573,7 @@
         <span class="edge-line bottom" aria-hidden="true"></span>
         <span class="edge-line left" aria-hidden="true"></span>
         <h2>Woorden en zinnen omzetten</h2>
-        <p>Elke letter krijgt een waarde volgens A = 1, B = 2, C = 3, tot en met Z = 26.</p>
+        <p>Elke letter krijgt een waarde volgens de bestaande Marit methode. Daaronder worden ook de Pythagoras en Chaldean naam Nasr nummers berekend.</p>
 
         <div class="input-row">
           <label for="textInput">Vul een woord of zin in</label>
@@ -502,6 +586,8 @@
         </div>
 
         <div class="result" id="textResult"></div>
+        <div class="result" id="pythagorasResult"></div>
+        <div class="result" id="chaldeanResult"></div>
       </article>
     </section>
 
@@ -512,15 +598,45 @@
       <span class="edge-line left" aria-hidden="true"></span>
       <h2>Hoe werkt het?</h2>
       <p>
-        Het Marit nummer systeem gebruikt eenvoudige optelling. Bij datums wordt het jaartal in twee delen gesplitst.
-        Bij 1967 wordt dat dus 19 en 67. Bij tekst worden alleen letters meegeteld. Spaties, cijfers en leestekens worden genegeerd.
-      </p>
-      <p>
-        Het totaal wordt teruggebracht tot één eindgetal door de losse cijfers op te tellen. Komt daar opnieuw een getal met meerdere cijfers uit,
-        dan wordt de stap herhaald tot er één cijfer overblijft.
+        De app laat nu drie tekstsystemen naast elkaar zien. Zo kun je dezelfde naam meteen vergelijken zonder extra stappen.
+        Alle systemen tellen alleen letters mee. Spaties, cijfers en leestekens worden genegeerd.
       </p>
 
-      <div class="alphabet" id="alphabet"></div>
+      <div class="method-grid" aria-label="Uitleg per berekeningssysteem">
+        <div class="method-card">
+          <h3>Marit tekstgetal</h3>
+          <span class="method-note">A = 1 tot Z = 26</span>
+          <p>
+            Dit is de oorspronkelijke methode in deze app. Elke letter krijgt zijn normale positie in het alfabet.
+            De letterwaarden worden opgeteld en daarna teruggebracht tot één eindgetal.
+          </p>
+          <div class="alphabet" id="alphabet"></div>
+        </div>
+
+        <div class="method-card">
+          <h3>Pythagoras naam Nasr nummer</h3>
+          <span class="method-note">Cyclisch 1 t/m 9</span>
+          <p>
+            Deze methode telt steeds door van 1 tot en met 9 en begint daarna opnieuw bij 1.
+            Daardoor krijgt J weer waarde 1, K waarde 2 en zo verder.
+          </p>
+          <div class="mini-alphabet" id="pythagorasAlphabet"></div>
+        </div>
+
+        <div class="method-card">
+          <h3>Chaldean naam Nasr nummer</h3>
+          <span class="method-note">Eigen indeling 1 t/m 8</span>
+          <p>
+            Deze methode gebruikt een vaste Chaldean letterindeling. De waarde 9 wordt niet aan letters toegekend.
+            Het totaal laat het compound nummer zien; de bol toont de herleide waarde.
+          </p>
+          <div class="mini-alphabet" id="chaldeanAlphabet"></div>
+        </div>
+      </div>
+
+      <div class="method-tip">
+        Het eindgetal ontstaat steeds op dezelfde manier: tel de losse cijfers van het totaal bij elkaar op. Is de uitkomst nog steeds groter dan 9, herhaal je die stap tot er één cijfer overblijft.
+      </div>
     </section>
 
     <footer>Gemaakt voor het Marit nummer systeem</footer>
@@ -531,8 +647,27 @@
     const textInput = document.getElementById('textInput');
     const dateResult = document.getElementById('dateResult');
     const textResult = document.getElementById('textResult');
+    const pythagorasResult = document.getElementById('pythagorasResult');
+    const chaldeanResult = document.getElementById('chaldeanResult');
     const heroNumber = document.getElementById('heroNumber');
     const alphabet = document.getElementById('alphabet');
+    const pythagorasAlphabet = document.getElementById('pythagorasAlphabet');
+    const chaldeanAlphabet = document.getElementById('chaldeanAlphabet');
+
+    const pythagorasValues = Object.fromEntries(
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((letter, index) => [letter, (index % 9) + 1])
+    );
+
+    const chaldeanValues = {
+      A: 1, I: 1, J: 1, Q: 1, Y: 1,
+      B: 2, K: 2, R: 2,
+      C: 3, G: 3, L: 3, S: 3,
+      D: 4, M: 4, T: 4,
+      E: 5, H: 5, N: 5, X: 5,
+      U: 6, V: 6, W: 6,
+      O: 7, Z: 7,
+      F: 8, P: 8
+    };
 
     function digitReductionSteps(number) {
       const steps = [];
@@ -551,6 +686,60 @@
     function formatReduction(steps) {
       if (!steps.length) return '';
       return steps.map(step => `${step.digits.join(' + ')} = ${step.sum}`).join('<br>');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getLetterEntries(value, values) {
+      const entries = [];
+
+      for (const character of value) {
+        const normalized = normalizeLetter(character);
+        const code = normalized.charCodeAt(0);
+
+        if (code >= 65 && code <= 90 && values[normalized]) {
+          entries.push({ letter: normalized, value: values[normalized] });
+        }
+      }
+
+      return entries;
+    }
+
+    function renderNameMethodResult(target, methodName, value, entries, note = '') {
+      if (!value) {
+        target.className = 'result empty';
+        target.innerHTML = '<span class="warning">Vul eerst een naam, woord of zin in.</span>';
+        return;
+      }
+
+      if (!entries.length) {
+        target.className = 'result empty';
+        target.innerHTML = '<span class="warning">Er zijn geen letters gevonden om op te tellen.</span>';
+        return;
+      }
+
+      const total = entries.reduce((sum, item) => sum + item.value, 0);
+      const reduction = digitReductionSteps(total);
+      const letterLine = entries.map(item => `${item.letter}=${item.value}`).join(' + ');
+      const valueLine = entries.map(item => item.value).join(' + ');
+      const reductionLine = formatReduction(reduction.steps);
+
+      target.className = 'result';
+      target.innerHTML = `
+        <div class="result-title">${methodName}: ${escapeHtml(value)}</div>
+        <div class="sum-line">${letterLine}</div>
+        <div class="sum-line">${valueLine} = ${total}</div>
+        ${reductionLine ? `<div class="sum-line">${reductionLine}</div>` : ''}
+        ${note ? `<div class="sum-line">${note}</div>` : ''}
+        <div class="final-number" title="Naam Nasr nummer">${reduction.final}</div>
+      `;
     }
 
     function setHero(number) {
@@ -597,39 +786,61 @@
       if (!value) {
         textResult.className = 'result empty';
         textResult.innerHTML = '<span class="warning">Vul eerst een woord of zin in.</span>';
+        pythagorasResult.className = 'result empty';
+        pythagorasResult.innerHTML = '<span class="warning">Vul eerst een naam, woord of zin in.</span>';
+        chaldeanResult.className = 'result empty';
+        chaldeanResult.innerHTML = '<span class="warning">Vul eerst een naam, woord of zin in.</span>';
         return;
       }
 
-      const entries = [];
+      const maritEntries = [];
 
       for (const character of value) {
         const normalized = normalizeLetter(character);
         const code = normalized.charCodeAt(0);
 
         if (code >= 65 && code <= 90) {
-          entries.push({ letter: normalized, value: code - 64 });
+          maritEntries.push({ letter: normalized, value: code - 64 });
         }
       }
 
-      if (!entries.length) {
+      if (!maritEntries.length) {
         textResult.className = 'result empty';
         textResult.innerHTML = '<span class="warning">Er zijn geen letters gevonden om op te tellen.</span>';
+        renderNameMethodResult(pythagorasResult, 'Pythagoras naam Nasr nummer', value, []);
+        renderNameMethodResult(chaldeanResult, 'Chaldean naam Nasr nummer', value, []);
         return;
       }
 
-      const total = entries.reduce((sum, item) => sum + item.value, 0);
+      const total = maritEntries.reduce((sum, item) => sum + item.value, 0);
       const reduction = digitReductionSteps(total);
-      const letterLine = entries.map(item => `${item.letter}=${item.value}`).join(' + ');
-      const valueLine = entries.map(item => item.value).join(' + ');
+      const letterLine = maritEntries.map(item => `${item.letter}=${item.value}`).join(' + ');
+      const valueLine = maritEntries.map(item => item.value).join(' + ');
 
       textResult.className = 'result';
       textResult.innerHTML = `
-        <div class="result-title">Tekst: ${value}</div>
+        <div class="result-title">Marit tekstgetal: ${escapeHtml(value)}</div>
         <div class="sum-line">${letterLine}</div>
         <div class="sum-line">${valueLine} = ${total}</div>
         <div class="sum-line">${formatReduction(reduction.steps)}</div>
         <div class="final-number" title="Eindgetal">${reduction.final}</div>
       `;
+
+      renderNameMethodResult(
+        pythagorasResult,
+        'Pythagoras naam Nasr nummer',
+        value,
+        getLetterEntries(value, pythagorasValues)
+      );
+
+      renderNameMethodResult(
+        chaldeanResult,
+        'Chaldean naam Nasr nummer',
+        value,
+        getLetterEntries(value, chaldeanValues),
+        'Het totaal is het compound nummer; het cijfer in de bol is de herleide waarde.'
+      );
+
       setHero(reduction.final);
     }
 
@@ -637,6 +848,25 @@
       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
       alphabet.innerHTML = letters.map((letter, index) => `
         <div class="letter"><strong>${letter}</strong>${index + 1}</div>
+      `).join('');
+    }
+
+    function renderPythagorasAlphabet() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      pythagorasAlphabet.innerHTML = letters.map(letter => `
+        <div class="mini-letter"><strong>${letter}</strong>${pythagorasValues[letter]}</div>
+      `).join('');
+    }
+
+    function renderChaldeanAlphabet() {
+      const groups = Object.entries(chaldeanValues).reduce((result, [letter, value]) => {
+        result[value] = result[value] || [];
+        result[value].push(letter);
+        return result;
+      }, {});
+
+      chaldeanAlphabet.innerHTML = Object.keys(groups).map(value => `
+        <div class="mini-letter"><strong>${value}</strong>${groups[value].join(', ')}</div>
       `).join('');
     }
 
@@ -657,6 +887,8 @@
     textInput.addEventListener('input', calculateText);
 
     renderAlphabet();
+    renderPythagorasAlphabet();
+    renderChaldeanAlphabet();
     calculateDate();
     calculateText();
   </script>
