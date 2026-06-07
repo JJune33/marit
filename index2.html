@@ -64,7 +64,7 @@
 
     .hero {
       grid-template-columns: 1.1fr 0.9fr;
-      align-items: center;
+      align-items: stretch;
       gap: 28px;
       margin-bottom: 28px;
     }
@@ -201,14 +201,13 @@
     .number-orb {
       display: grid;
       place-items: center;
-      min-height: 330px;
       padding: 30px;
     }
 
     .orb {
       display: grid;
       place-items: center;
-      width: min(310px, 75vw);
+      width: clamp(210px, 22vw, 300px);
       aspect-ratio: 1;
       border-radius: 50%;
       background:
