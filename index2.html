@@ -98,19 +98,6 @@
       padding: 30px;
     }
 
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      z-index: 0;
-      top: -80px;
-      right: -90px;
-      width: 240px;
-      height: 240px;
-      pointer-events: none;
-      border-radius: 50%;
-      background: linear-gradient(135deg, rgba(255, 207, 107, 0.42), rgba(243, 123, 186, 0.26));
-      filter: blur(4px);
-    }
 
     .edge-card {
       isolation: isolate;
@@ -241,6 +228,10 @@
       margin: 22px 0 16px;
     }
 
+    .input-row.date-row {
+      width: min(260px, 100%);
+    }
+
     label {
       color: var(--text);
       font-size: 0.95rem;
@@ -263,6 +254,13 @@
     textarea {
       min-height: 114px;
       resize: vertical;
+    }
+
+    input[type="date"] {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
     }
 
     input:focus,
@@ -427,6 +425,10 @@
         font-size: 5rem;
       }
 
+      input[type="date"] {
+        max-width: 100%;
+      }
+
       .alphabet {
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
@@ -469,7 +471,7 @@
         <h2>Datum omzetten</h2>
         <p>Voorbeeld: 28/11/1967 wordt 28 + 11 + 19 + 67 = 125 en daarna 1 + 2 + 5 = 8.</p>
 
-        <div class="input-row">
+        <div class="input-row date-row">
           <label for="dateInput">Vul een datum in</label>
           <input id="dateInput" type="date" value="1967-11-28" />
         </div>
